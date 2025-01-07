@@ -11,35 +11,17 @@ export default function TopicPage({ params }: PageProps) {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [slug, setSlug] = useState<string>("");
 
   useEffect(() => {
-    // Handle both Promise and direct object cases
-    const getSlug = async () => {
-      try {
-        const resolvedParams = params instanceof Promise ? await params : params;
-        setSlug(resolvedParams.slug);
-      } catch (error) {
-        console.error('Error resolving params:', error);
-        setError('Failed to load topic');
-      }
-    };
-
-    getSlug();
-  }, [params]);
-
-  useEffect(() => {
-    if (slug) {
-      fetchTopic();
-    }
-  }, [slug]);
+    fetchTopic();
+  }, [params.slug]);
 
   const fetchTopic = async () => {
     try {
       const { data: topic, error: topicError } = await supabase
         .from('topics')
         .select('*')
-        .eq('slug', slug)
+        .eq('slug', params.slug)
         .single();
 
       if (topicError) throw topicError;
