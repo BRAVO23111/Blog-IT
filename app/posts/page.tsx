@@ -2,8 +2,7 @@
 
 import { Post } from "@/types/PostTypes";
 import { useEffect, useState } from "react";
-
-
+import { Send, AlertCircle, PenSquare } from "lucide-react";
 
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -53,34 +52,78 @@ export default function Posts() {
   };
 
   return (
-    <>
-      <h1>Posts</h1>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-          required
-        />
-        <textarea
-          name="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Content"
-          required
-        />
-        <button type="submit">Add Post</button>
-      </form>
-      {posts.map((post: Post) => (
-        <div key={post.id}>
-          <h2>Title: {post.title}</h2>
-          <p>Content: {post.content}</p>
-          <p>Date: {new Date(post.created_at).toLocaleDateString()}</p>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Share Your Thoughts</h1>
+      
+      {/* Error Alert */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+          <AlertCircle size={20} />
+          <span>{error}</span>
         </div>
-      ))}
-    </>
+      )}
+
+      {/* Post Form */}
+      <form onSubmit={handleSubmit} className="mb-12 space-y-4 bg-white p-6 rounded-lg shadow-md">
+        <div className="space-y-2">
+          <input
+            type="text"
+            name="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter your title"
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <textarea
+            name="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="What's on your mind?"
+            rows={4}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Send size={20} />
+          Post
+        </button>
+      </form>
+
+      {/* Posts List */}
+      <div className="space-y-6">
+        {posts.map((post: Post) => (
+          <article key={post.id} className="bg-white p-6 rounded-lg shadow-md">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h2 className="text-xl font-semibold text-gray-900">{post.title}</h2>
+                <p className="text-sm text-gray-500">
+                  {new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+              <PenSquare className="text-gray-400" size={20} />
+            </div>
+            <p className="mt-4 text-gray-600 whitespace-pre-wrap">{post.content}</p>
+          </article>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {posts.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <p>No posts yet. Be the first to share!</p>
+        </div>
+      )}
+    </div>
   );
 }

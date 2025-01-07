@@ -1,8 +1,14 @@
-type Post = {
-    id: number;
-    title: string;
-    content: string;
-    created_at: string;
-  };
+export type Topic = {
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+  slug: string;
+}
 
-  export type { Post };
+export type Post = {
+  id: number;
+  content: string;
+  created_at: string;
+  topic_id: string;
+}
