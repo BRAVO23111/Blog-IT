@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Send, Copy, AlertCircle } from "lucide-react";
+import { Send, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CreatePost() {
@@ -23,7 +23,7 @@ export default function CreatePost() {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
 
-      const { data, error } = await supabase
+      const {  error } = await supabase
         .from('topics')
         .insert([
           { title, description, slug }
