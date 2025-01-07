@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 // Get a specific topic and its posts
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { }: { params: { slug: string } }
 ) {
   try {
     // Get the slug from the URL
