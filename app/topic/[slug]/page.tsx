@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { Send, AlertCircle, Share2 } from "lucide-react";
 import { PageProps, Post, Topic } from "@/types/PostTypes";
 
@@ -11,51 +10,53 @@ export default function TopicPage({ params }: PageProps) {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchTopic();
-  }, [params.slug]);
+    const fetchTopicData = async () => {
+      try {
+        const resolvedSlug = (await params).slug;
+        const response = await fetch(`/api/topic?slug=${resolvedSlug}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch topic');
+        }
 
-  const fetchTopic = async () => {
-    try {
-      const { data: topic, error: topicError } = await supabase
-        .from('topics')
-        .select('*')
-        .eq('slug', params.slug)
-        .single();
+        const data = await response.json();
+        setTopic(data.topic);
+        setPosts(data.posts);
+      } catch (error) {
+        console.error('Error:', error);
+        setError('Failed to load topic');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      if (topicError) throw topicError;
-      setTopic(topic);
-
-      const { data: posts, error: postsError } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('topic_id', topic.id)
-        .order('created_at', { ascending: false });
-
-      if (postsError) throw postsError;
-      setPosts(posts);
-    } catch (error) {
-      console.error('Error:', error);
-      setError('Failed to load topic');
-    }
-  };
+    fetchTopicData();
+  }, [params]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!topic) return;
 
     try {
-      const { data: newPost, error } = await supabase
-        .from('posts')
-        .insert([
-          { content, topic_id: topic.id }
-        ])
-        .select()
-        .single();
+      const response = await fetch('/api/topic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          topic_id: topic.id
+        }),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to create post');
+      }
 
+      const newPost = await response.json();
       setPosts(prev => [newPost, ...prev]);
       setContent("");
     } catch (error) {
@@ -74,7 +75,8 @@ export default function TopicPage({ params }: PageProps) {
     }
   };
 
-  if (!topic) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (!topic) return <div>Topic not found</div>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

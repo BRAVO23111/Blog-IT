@@ -8,12 +8,13 @@ export type Topic = {
 
 export type Post = {
   id: number;
+  title: string;
   content: string;
   created_at: string;
   topic_id: string;
 }
 
 export type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
