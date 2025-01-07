@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 // Get a specific topic and its posts
-export async function GET(
-  request: Request,
-  { }: { params: { slug: string } }
-) {
+export async function GET(request: Request) {
   try {
     // Get the slug from the URL
     const url = new URL(request.url);
