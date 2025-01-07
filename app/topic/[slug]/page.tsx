@@ -1,12 +1,17 @@
 "use client"
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Send, AlertCircle, Share2 } from "lucide-react";
 import { Post, Topic } from "@/types/PostTypes";
 
-export default function TopicPage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
-  const resolvedParams = use(params);
+type PageProps = {
+  params: {
+    slug: string
+  }
+}
+
+export default function TopicPage({ params }: PageProps) {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
@@ -15,15 +20,15 @@ export default function TopicPage({ params }: { params: Promise<{ slug: string }
 
   useEffect(() => {
     fetchTopic();
-  }, [resolvedParams.slug]);
+  }, [params.slug]);
 
   const fetchTopic = async () => {
     try {
-      // Fetch topic using resolved slug
+      // Fetch topic
       const { data: topic, error: topicError } = await supabase
         .from('topics')
         .select('*')
-        .eq('slug', resolvedParams.slug)
+        .eq('slug', params.slug)
         .single();
 
       if (topicError) throw topicError;
