@@ -12,3 +12,9 @@ export type Post = {
   created_at: string;
   topic_id: string;
 }
+
+export type PageProps = {
+  params: {
+    slug: string
+  }
+}

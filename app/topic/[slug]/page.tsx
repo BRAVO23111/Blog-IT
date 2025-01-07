@@ -3,13 +3,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Send, AlertCircle, Share2 } from "lucide-react";
-import { Post, Topic } from "@/types/PostTypes";
+import { PageProps, Post, Topic } from "@/types/PostTypes";
 
-type PageProps = {
-  params: {
-    slug: string
-  }
-}
+
 
 export default function TopicPage({ params }: PageProps) {
   const [topic, setTopic] = useState<Topic | null>(null);
