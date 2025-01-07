@@ -14,7 +14,6 @@ export type Post = {
 }
 
 export type PageProps = {
-  params: {
-    slug: string
-  }
+  params: Promise<{ slug: string }> | { slug: string };
+  searchParams?: { [key: string ]: string | string[] | undefined };
 }

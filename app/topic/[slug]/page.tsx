@@ -5,32 +5,46 @@ import { supabase } from "@/lib/supabase";
 import { Send, AlertCircle, Share2 } from "lucide-react";
 import { PageProps, Post, Topic } from "@/types/PostTypes";
 
-
-
 export default function TopicPage({ params }: PageProps) {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [slug, setSlug] = useState<string>("");
 
   useEffect(() => {
-    fetchTopic();
-  }, [params.slug]);
+    // Handle both Promise and direct object cases
+    const getSlug = async () => {
+      try {
+        const resolvedParams = params instanceof Promise ? await params : params;
+        setSlug(resolvedParams.slug);
+      } catch (error) {
+        console.error('Error resolving params:', error);
+        setError('Failed to load topic');
+      }
+    };
+
+    getSlug();
+  }, [params]);
+
+  useEffect(() => {
+    if (slug) {
+      fetchTopic();
+    }
+  }, [slug]);
 
   const fetchTopic = async () => {
     try {
-      // Fetch topic
       const { data: topic, error: topicError } = await supabase
         .from('topics')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('slug', slug)
         .single();
 
       if (topicError) throw topicError;
       setTopic(topic);
 
-      // Fetch posts for this topic
       const { data: posts, error: postsError } = await supabase
         .from('posts')
         .select('*')
