@@ -19,7 +19,6 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 
 const containerVariants = {
   hidden: { opacity: 0 },

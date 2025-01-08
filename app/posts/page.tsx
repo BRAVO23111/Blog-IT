@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -29,7 +30,7 @@ const Posts = () => {
       const data = await res.json();
       setPosts(data);
     } catch (error) {
-      setError('Failed to load posts. Please try again later.');
+      setError('Failed to fetch posts');
     }
   };
 
