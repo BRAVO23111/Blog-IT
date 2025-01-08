@@ -18,7 +18,7 @@ export default function Home() {
     // //   </div>
     // // </div>
     <>
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="bg-black">
       <div className="max-w-7xl mx-auto">
         <CreatePost/>
       </div>

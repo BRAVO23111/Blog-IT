@@ -2,8 +2,35 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Send, AlertCircle } from "lucide-react";
+import { Send, AlertCircle, Sparkles, MessageSquarePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -48,70 +75,126 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Create Your Anonymous Board
+    <div className="relative min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-gray-900 to-black overflow-hidden">
+      {/* Gradient Orbs */}
+      <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
+      <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      
+      {/* Grid Background */}
+      <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20" />
+      
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative max-w-2xl mx-auto pt-6 px-4 sm:px-6 lg:px-8"
+      >
+        {/* Back Button */}
+        
+
+        {/* Header Section */}
+        <motion.div variants={itemVariants} className="text-center space-y-3 mb-8">
+          <div className="inline-block">
+            <span className="inline-flex items-center justify-center p-3 bg-blue-500/10 rounded-xl">
+              <MessageSquarePlus className="w-7 h-7 text-blue-400" />
+            </span>
+          </div>
+          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-400">
+            Create Your Board
           </h1>
-          <p className="text-gray-600">
-            Share the link and receive anonymous thoughts and messages
+          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            Share the link and receive anonymous thoughts and messages from anyone
           </p>
-        </div>
+        </motion.div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
-        )}
+        {/* Error Alert */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="mb-8"
+            >
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <form onSubmit={createTopic} className="space-y-6 bg-white p-8 rounded-xl shadow-md">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              Topic Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., Share your thoughts about..."
-              required
-            />
-          </div>
+        {/* Form Card */}
+        <motion.div variants={itemVariants}>
+          <Card className="border-gray-800/50 bg-gray-900/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Sparkles className="h-5 w-5 text-blue-400" />
+                Board Details
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Set up your anonymous message board in seconds
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={createTopic} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-200">
+                    Board Title
+                  </label>
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="h-12 bg-gray-800/50 border-gray-700/50 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
+                    placeholder="e.g., Share your thoughts about..."
+                    required
+                  />
+                </div>
 
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Description (optional)
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Provide more context about your topic..."
-            />
-          </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-200">
+                    Description (optional)
+                  </label>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Provide more context about your board..."
+                    className="min-h-[150px] resize-none bg-gray-800/50 border-gray-700/50 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {isLoading ? (
-              "Creating..."
-            ) : (
-              <>
-                <Send size={20} />
-                Create & Share
-              </>
-            )}
-          </button>
-        </form>
-      </div>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 h-12 text-base font-medium"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 border-t-2 border-blue-200 rounded-full animate-spin" />
+                      Creating your board...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Send className="h-5 w-5" />
+                      Create & Share Board
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Footer Text */}
+        <motion.div 
+          variants={itemVariants}
+          className="mt-8 text-center text-sm text-gray-500"
+        >
+          By creating a board, you agree to our Terms of Service and Privacy Policy
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
